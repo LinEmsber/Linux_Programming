@@ -9,7 +9,8 @@
 #define MAX_FILE_NUMBER 2048
 #define MAX_FILE_NAME_SIZE 64
 
-int dir_file_name_list (char *list[], char *dir_path){
+int dir_file_name_list (char *list[], char *dir_path)
+{
 	DIR *dp;
 	struct dirent *ep;
 	int i;
