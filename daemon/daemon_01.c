@@ -10,7 +10,7 @@
 #include <syslog.h>
 #include <string.h>
 
-#define DAEMON_NAME "daemon"
+#define DAEMON_NAME "new_daemon"
 
 void process(){
 	syslog (LOG_NOTICE, "Writing to Syslog");
