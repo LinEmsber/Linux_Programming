@@ -3,6 +3,31 @@
 #include <stdbool.h>
 #include <string.h>
 
+int i;
+
+// struct xml_entry
+struct xml_entry {
+	int memory_state;
+	char *memory;
+	size_t size;
+};
+
+
+// XML_StartElementHandler
+static void startElement(void *userData, const XML_Char *name, const XML_Char **atts){
+
+	struct xml_entry *xml_data = (struct xml_entry *) userData;
+
+	for (i = 0; atts[i]; i++)
+		printf("%d-th, atts: %s\n", i, (char*)atts[i]);
+}
+
+// XML_EndElementHandler
+static void endElement(void *userData, const XML_Char *name){
+	struct xml_entry *xml_data = (struct xml_entry *) userData;
+}
+
+
 static const char* xml =
     "<data>\n"\
     "    <header length=\"4\">\n"\
@@ -13,98 +38,36 @@ static const char* xml =
     "    </header>\n"\
     "</data>\n";
 
-void reset_char_data_buffer ();
-void process_char_data_buffer ();
-static bool grab_next_value;
-
-void start_element(void *data, const char *element, const char **attribute) {
-    
-    int i;
-    process_char_data_buffer();
-    reset_char_data_buffer();
-
-    if ( strcmp("item", element) == 0 ) {
-        size_t matched = 0;
-
-        for (i = 0; attribute[i]; i = i + 2) {
-            if ( ( strcmp("name", attribute[i]) == 0 ) && ( strcmp("frame", attribute[i+1]) == 0 ) )
-                ++matched;
-
-            if ( ( strcmp("type", attribute[i]) == 0 ) && ( strcmp("int16", attribute[i+1]) == 0 ) )
-                ++matched;
-        }
-
-        if (matched == 2) {
-            printf("this is the element you are looking for\n");
-            grab_next_value = true;
-        }
-    }
-}
-
-void end_element(void *data, const char *el) {
-    process_char_data_buffer();
-    reset_char_data_buffer();
-}
-
-// ==========================================================
-
-
-static size_t offs;
-static bool overflow;
-static char char_data_buffer[1024];
-
-
-void reset_char_data_buffer (void) {
-    offs = 0;
-    overflow = false;
-    grab_next_value = false;
-}
-
-
-// pastes parts of the node together
-void char_data (void *userData, const XML_Char *s, int len) {
-    if (!overflow) {
-        if (len + offs >= sizeof(char_data_buffer) ) {
-            overflow = true;
-        } else {
-            memcpy(char_data_buffer + offs, s, len);
-            offs += len;
-        }
-    }
-}
-
-// if the element is the one we're after, convert the character data to
-// an integer value
-void process_char_data_buffer (void) {
-    if (offs > 0) {
-        char_data_buffer[ offs ] = '\0';
-
-        printf("character data: %s\n", char_data_buffer);
-
-        if ( grab_next_value ) {
-            int value = atoi( char_data_buffer );
-
-            printf("the value is %d\n", value);
-        }
-    }
-}
-
-// ==========================================================
-
 
 int main (void ) {
 
-    XML_Parser parser = XML_ParserCreate(NULL);
 
-    XML_SetElementHandler(parser, start_element, end_element);
-    XML_SetCharacterDataHandler(parser, char_data);
+	int ret_XML_Parse;
+	XML_Parser parser;
+	struct xml_entry * xml_data = (struct xml_entry *)malloc( sizeof(struct xml_entry ) );
+	xml_data -> memory = (char *)malloc(sizeof(char)*100);
 
-    reset_char_data_buffer();
+	// Initialize parser
+	parser = XML_ParserCreateNS(NULL, '\0');
+	XML_SetUserData(parser, xml);
+	XML_SetElementHandler(parser, startElement, endElement);
 
-    if (XML_Parse(parser, xml, strlen(xml), XML_TRUE) == XML_STATUS_ERROR)
-        printf("Error: %s\n", XML_ErrorString(XML_GetErrorCode(parser)));
 
-    XML_ParserFree(parser);
+	// parse xml
+	//
+	// int XML_Parse(XML_Parser p, const char *s, int len, int isFinal)
+	// The string s is a buffer containing part (or perhaps all) of the document. The number
+	// of bytes of s that are part of the document is indicated by len.
+	// The isFinal parameter informs the parser that this is the last piece of the document.
+	ret_XML_Parse = XML_Parse(parser,
+				xml_data -> memory,
+				strlen(xml_data -> memory),
+				XML_TRUE);
 
-    return 0;
+	if (ret_XML_Parse == XML_STATUS_ERROR)
+		printf("Error: %s\n", XML_ErrorString(XML_GetErrorCode(parser)));
+
+	XML_ParserFree(parser);
+
+	return 0;
 }
