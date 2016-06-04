@@ -1,10 +1,12 @@
 /* An example of pthread API */
 
 #include <stdio.h>
+#include <errno.h>
 #include <pthread.h>
 
-// Compute successive prime numbers
-void* compute_prime (void* arg){
+// compute successive prime numbers
+void* compute_prime (void* arg)
+{
 
 	int candidate = 2;
 	int n = *((int*) arg);
@@ -13,17 +15,19 @@ void* compute_prime (void* arg){
 		int factor;
 		int is_prime = 1;
 
-		/* Test primality by successive division. */
-		for (factor = 2; factor < candidate; ++factor)
+		// test primality by successive division.
+		for (factor = 2; factor < candidate; ++factor){
+
 			if (candidate % factor == 0) {
 				is_prime = 0;
 				break;
 			}
-		/* Is this the prime number we’re looking for? */
+		}
+		// is the prime number or not
 		if (is_prime) {
 			if (--n == 0)
-				/* Return the desired prime number as the thread return value. */
-				return (void*) candidate;
+				// printf("%d\n", n);
+				return (void *)candidate;
 		}
 		++candidate;
 	}
@@ -33,24 +37,24 @@ void* compute_prime (void* arg){
 int main ()
 {
 
-	pthread_t thread;
-	int which_prime = 100;
 	int prime;
+	int which_prime = 1000;
+	int ret_pthread_create, ret_pthread_join;
+	pthread_t thread;
+
+	// make a new thread
+	ret_pthread_create = pthread_create (&thread, NULL, &compute_prime, &which_prime);
+	if (ret_pthread_create != 0)
+		perror("pthread_create");
+
+	// wait for the prime number thread to complete
+	ret_pthread_join = pthread_join (thread, (void**) &prime);
+	if (ret_pthread_join != 0)
+		perror("pthread_join");
 
 
-
-       // int pthread_create(pthread_t *thread, const pthread_attr_t *attr,
-       //    			void *(*start_routine) (void *), *arg);
-
-	// Start the computing thread, up to the 5,000th prime number.
-	pthread_create (&thread, NULL, &compute_prime, &which_prime);
-
-	/* Do some other work here... */
-	/* Wait for the prime number thread to complete, and get the result. */
-	pthread_join (thread, (void*) &prime);
-
-	/* Print the largest prime it computed. */
-	printf("The %dth prime number is %d.\n", which_prime, prime);
+	// print the largest prime
+	printf("The %d-th prime number is %d.\n", which_prime, prime);
 
 	return 0;
 }
