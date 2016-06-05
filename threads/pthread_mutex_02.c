@@ -1,6 +1,6 @@
 /*
  * This is a simple serial program which computes the dot product of two
- * vectors.  The threaded version can is dotprod_mutex.c.
+ * vectors.
  */
 #include <stdio.h>
 #include <stdlib.h>
