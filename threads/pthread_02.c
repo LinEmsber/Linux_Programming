@@ -39,6 +39,7 @@ int main ()
 
 	int prime;
 	int which_prime = 1000;
+	int which_prime_origianl = which_prime;
 	int ret_pthread_create, ret_pthread_join;
 	pthread_t thread;
 
@@ -54,7 +55,7 @@ int main ()
 
 
 	// print the largest prime
-	printf("The %d-th prime number is %d.\n", which_prime, prime);
+	printf("The %d-th prime number is %d.\n", which_prime_origianl, prime);
 
 	return 0;
 }
