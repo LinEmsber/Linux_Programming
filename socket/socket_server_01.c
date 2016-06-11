@@ -39,36 +39,50 @@ int main(int argc, char *argv[])
 {
 
 	int listen_fd = 0, conn_fd = 0;
-	int ret_bind, ret_listen;
+	int ret_bind = 0, ret_listen = 0;
 	struct sockaddr_in serv_addr;
 
-	char sendBuff[1025];
+	char send_buf[1025];
+	memset(send_buf, 0, sizeof(send_buf));
 	time_t ticks;
 
-	listen_fd = socket(AF_INET, SOCK_STREAM, 0);
+	// create a dsocket
 	memset(&serv_addr, 0, sizeof(struct sockaddr_in));
-	memset(sendBuff, 0, sizeof(sendBuff));
+	listen_fd = socket(AF_INET, SOCK_STREAM, 0);
+	if(listen_fd < 0){
+		perror("socket");
+	}
 
+	// set a domain
 	serv_addr.sin_family = AF_INET;
 	serv_addr.sin_addr.s_addr = htonl(INADDR_ANY);
 	serv_addr.sin_port = htons(5000);
 
+	// bind
 	ret_bind = bind(listen_fd, (struct sockaddr*)&serv_addr, sizeof(struct sockaddr_in));
 	if (ret_bind != 0){
 		perror("bind");
 	}
 
+	// listen for connect
 	listen(listen_fd, 10);
 	if (ret_listen != 0){
 		perror("listen");
 	}
 
 	while(1){
+
+		// If the connection is happen, accept it.
+		// In the call to accept(), the server is put to sleep and when for an incoming
+		// client request, the three way TCP handshake is complete, the function accept()
+		// wakes up and returns the socket descriptor representing the client socket.
 		conn_fd = accept(listen_fd, (struct sockaddr*)NULL, NULL);
 
 		ticks = time(NULL);
-		snprintf(sendBuff, sizeof(sendBuff), "%.24s\r\n", ctime(&ticks));
-		write(conn_fd, sendBuff, strlen(sendBuff));
+		// snprintf(send_buf, sizeof(send_buf), "%.24s\r\n", ctime(&ticks));
+		snprintf(send_buf, sizeof(send_buf), "hello client");
+
+		write(conn_fd, send_buf, strlen(send_buf));
 
 		close(conn_fd);
 		sleep(1);
