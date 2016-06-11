@@ -7,6 +7,7 @@
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <netinet/in.h>
+#include <time.h>
 
 // struct sockaddr_in {
 // 	sa_family_t    sin_family; /* address family: AF_INET */
@@ -79,8 +80,7 @@ int main(int argc, char *argv[])
 		conn_fd = accept(listen_fd, (struct sockaddr*)NULL, NULL);
 
 		ticks = time(NULL);
-		// snprintf(send_buf, sizeof(send_buf), "%.24s\r\n", ctime(&ticks));
-		snprintf(send_buf, sizeof(send_buf), "hello client");
+		snprintf(send_buf, sizeof(send_buf), "hello client\n%.24s\r\n", ctime(&ticks));
 
 		write(conn_fd, send_buf, strlen(send_buf));
 
