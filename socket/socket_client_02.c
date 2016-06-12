@@ -18,9 +18,9 @@ int main(int argc, char* argv[])
 	int sockd;
 	int counter;
 	int fd;
-	struct sockaddr_in xferServer;
+	struct sockaddr_in file_trans_server;
 	char buf[MAXBUF];
-	int returnStatus;
+	int return_status;
 
 	if (argc < 3){
 		fprintf(stderr, "Usage: %s <ip address> <filename> [dest filename]\n",
@@ -28,50 +28,46 @@ int main(int argc, char* argv[])
 		exit(1);
 	}
 
-	/* create a socket */
+	// create a socket
 	sockd = socket(AF_INET, SOCK_STREAM, 0);
 	if (sockd == -1){
 		fprintf(stderr, "Could not create socket!\n");
 		exit(1);
 	}
 
-	/* set up the server information */
-	xferServer.sin_family = AF_INET;
-	xferServer.sin_addr.s_addr = inet_addr(argv[1]);
-	xferServer.sin_port = htons(SERVERPORT);
+	// set up the server information
+	file_trans_server.sin_family = AF_INET;
+	file_trans_server.sin_addr.s_addr = inet_addr(argv[1]);
+	file_trans_server.sin_port = htons(SERVERPORT);
 
-	/* connect to the server */
-	returnStatus = connect(sockd,
-	(struct sockaddr*)&xferServer,
-	sizeof(xferServer));
-
-	if (returnStatus == -1)	{
+	// connect to the server
+	return_status = connect(sockd, (struct sockaddr*)&file_trans_server, sizeof(file_trans_server));
+	if (return_status == -1){
 		fprintf(stderr, "Could not connect to server!\n");
 		exit(1);
 	}
 
-	/* send the name of the file we want to the server */
-	returnStatus = write(sockd, argv[2], strlen(argv[2])+1);
-	if (returnStatus == -1)	{
+	// send the name of the file we want to the server
+	return_status = write(sockd, argv[2], strlen(argv[2])+1);
+	if (return_status == -1){
 		fprintf(stderr, "Could not send filename to server!\n");
 		exit(1);
 	}
 
-	/* call shutdown to set our socket to read-only */
+	// call shutdown to set our socket to read-only
 	shutdown(sockd, SHUT_WR);
 
-	/* open up a handle to our destination file to receive the contents */
-	/* from the server */
+	// open up a handle to our destination file to receive the contents from the server.
 	fd = open(argv[3], O_WRONLY | O_CREAT | O_APPEND);
-	if (fd == -1)	{
+	if (fd == -1){
 		fprintf(stderr, "Could not open destination file, using stdout.\n");
 		fd = 1;
 	}
 
-	/* read the file from the socket as long as there is data */
+	// read the file from the socket as long as there is data
 	while ((counter = read(sockd, buf, MAXBUF)) > 0){
 
-		/* send the contents to stdout */
+		// send the contents to stdout
 		write(fd, buf, counter);
 	}
 
@@ -79,7 +75,7 @@ int main(int argc, char* argv[])
 		fprintf(stderr, "Could not read file from socket!\n");
 		exit(1);
 	}
-	
+
 	close(sockd);
 
 	return 0;

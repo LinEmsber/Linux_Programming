@@ -11,31 +11,30 @@
 
 int main()
 {
-	int socket1,socket2;
+	int return_status;
+	int socket1, socket2;
 	int addrlen;
-	struct sockaddr_in xferSer
+	struct sockaddr_in file_trans_server, file_trans_client;
 
-	/* create a socket */
+	// create a socket
 	socket1 = socket(AF_INET, SOCK_STREAM, 0);
 	if (socket1 == -1)	{
 		fprintf(stderr, "Could not create socket!\n");
 		exit(1);
 	}
 
-	/* bind to a socket, use INADDR_ANY for all local addresses */
-	xferServer.sin_family = AF_INET;
-	xferServer.sin_addr.s_addr = INADDR_ANY;
-	xferServer.sin_port = htons(SERVERPORT);
-	returnStatus = bind(socket1,
-	(struct sockaddr*)&xferServer,
-	sizeof(xferServer));
-	if (returnStatus == -1)	{
+	// bind to a socket, use INADDR_ANY for all local addresses	file_trans_server.sin_family = AF_INET;
+	file_trans_server.sin_addr.s_addr = INADDR_ANY;
+	file_trans_server.sin_port = htons(SERVERPORT);
+
+	return_status = bind(socket1, (struct sockaddr*)&file_trans_server, sizeof(file_trans_server));
+	if (return_status == -1)	{
 		fprintf(stderr, "Could not bind to socket!\n");
 		exit(1);
 	}
 
-	returnStatus = listen(socket1, 5);
-	if (returnStatus == -1)	{
+	return_status = listen(socket1, 5);
+	if (return_status == -1)	{
 		fprintf(stderr, "Could not listen on socket!\n");
 		exit(1);
 	}
@@ -43,29 +42,29 @@ int main()
 	for(;;)	{
 
 		int fd;
-		int i, readCounter, writeCounter;
+		int i, read_counter, write_counter;
 		char* bufptr;
 		char buf[MAXBUF];
 		char filename[MAXBUF];
 
-		/* wait for an incoming connection */
-		addrlen = sizeof(xferClient);
+		// wait for an incoming connection
+		addrlen = sizeof(file_trans_client);
 
-		/* use accept() to handle incoming connection requests */
-		/* and free up the original socket for other requests */
-		socket2 = accept(socket1, (struct sockaddr*)&xferClient, &addrlen);
-		if (socket2 == -1)		{
+		// use accept() to handle incoming connection requests, and free up
+		// the original socket for other requests.
+		socket2 = accept(socket1, (struct sockaddr*)&file_trans_client, &addrlen);
+		if (socket2 == -1){
 			fprintf(stderr, "Could not accept connection!\n");
 			exit(1);
 		}
 
-		/* get the filename from the client over the socket */
+		// get the filename from the client over the socket
 		i = 0;
-		if ((readCounter = read(socket2, filename + i, MAXBUF)) > 0)		{
-			i += readCounter;
+		if ((read_counter = read(socket2, filename + i, MAXBUF)) > 0){
+			i += read_counter;
 		}
 
-		if (readCounter == -1)		{
+		if (read_counter == -1){
 			fprintf(stderr, "Could not read filename from socket!\n");
 			close(socket2);
 			continue;
@@ -74,41 +73,42 @@ int main()
 		filename[i+1] = '\0';
 		printf("Reading file %s\n", filename);
 
-		/* open the file for reading */
+		// open the file for reading
 		fd = open(filename, O_RDONLY);
 		if (fd == -1){
 			fprintf(stderr, "Could not open file for reading!\n");
 			close(socket2);
 			continue;
 		}
-	}
 
 
-	/* reset the read counter */
-	readCounter = 0;
-	/* read the file, and send it to the client in chunks of size MAXBUF */
-	while((readCounter = read(fd, buf, MAXBUF)) > 0){
+		// reset the read counter
+		read_counter = 0;
+		// read the file, and send it to the client in chunks of size MAXBUF
+		while((read_counter = read(fd, buf, MAXBUF)) > 0){
 
-		writeCounter = 0;
-		bufptr = buf;
+			write_counter = 0;
+			bufptr = buf;
 
-		while (writeCounter < readCounter){
+			while (write_counter < read_counter){
 
-			readCounter -= writeCounter;
-			bufptr += writeCounter;
-			writeCounter = write(socket2, bufptr, readCounter);
+				read_counter -= write_counter;
+				bufptr += write_counter;
+				write_counter = write(socket2, bufptr, read_counter);
 
-			if (writeCounter == -1)	{
-				fprintf(stderr, "Could not write file to client!\n");
-				close(socket2);
-				continue;
+				if (write_counter == -1){
+					fprintf(stderr, "Could not write file to client!\n");
+					close(socket2);
+					continue;
+				}
 			}
 		}
+	// for loop
 	}
 
 	close(fd);
 	close(socket2);
-	close (socket1);
+	close(socket1);
 
 	return 0;
 }
