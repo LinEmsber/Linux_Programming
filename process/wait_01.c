@@ -6,7 +6,7 @@
 main()
 {
 	int pid;
-	int child_pid;
+	int w;
 	int status;
 
 	// Duplicate. Child and parent continue from here.
@@ -19,7 +19,7 @@ main()
 		printf("===============parent process===============\n");
 		printf("The parent process with PID: %d, PPID: %d.\n",	getpid(), getppid());
 		printf("New child's PID is %d.\n", pid);
-		child_pid = wait(&status);
+		w = wait(&status);
 		printf("Waiting for child\n");
 		printf("===============parent process===============\n");
 
