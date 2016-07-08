@@ -2,6 +2,9 @@
  * Shows how to use thread cleanup handlers.
  */
 
+
+// cannot be compiled.
+
 #include <stdio.h>
 #include <unistd.h>
 #include <errno.h>
@@ -23,7 +26,7 @@ void *thread_fun_1(void *arg)
 	printf("thread 1 push complete\n");
 
 	if (arg)
-		return ((void *) 1);
+		return (void *)1;
 
 
 	pthread_cleanup_pop(0);
@@ -43,7 +46,7 @@ void *thread_fun_2(void *arg)
 
 	if (arg)
 		pthread_exit( (void *) 2 );
-	
+
 
 	pthread_cleanup_pop(0);
 	pthread_cleanup_pop(0);
