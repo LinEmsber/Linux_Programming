@@ -5,7 +5,7 @@
 #include <pthread.h>
 
 // compute successive prime numbers
-void* compute_prime (void* arg)
+void *compute_prime (void* arg)
 {
 
 	int candidate = 2;
