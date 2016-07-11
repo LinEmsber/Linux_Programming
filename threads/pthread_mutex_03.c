@@ -83,3 +83,57 @@ struct object *object_find(int id)
 
 	return op;
 }
+
+// release a reference to the object_find
+void object_release(struct object *op)
+{
+	struct opject *tmp_op;
+	int index;
+
+	pthread_mutex_lock(&op -> lock);
+
+	// the last reference
+	if( op -> count == 1){
+
+		pthread_mutex_unlock(&op -> lock);
+
+		pthread_mutex_lock(&hash_lock);
+		pthread_mutex_lock(&op -> lock);
+
+		// need to recheck the condition
+		if(op -> count != 1){
+			op -> count --;
+
+			pthread_mutex_unlock(&op -> lock);
+			pthread_mutex_unlock(&hash_lock);
+
+			return ;
+		}
+
+		// remove from list
+		index = HASH(op -> id);
+		tmp_op = object_hash[index];
+
+		if(tmp_op == op){
+			object_hash[index] = op -> next;
+		}else{
+			// search object in sequentially
+			while ( tmp_op -> next != op){
+				tmp_op = tmp_op -> next
+			}
+
+			tmp_op -> next = op -> next;
+		}
+
+		pthread_mutex_unlock(&hash_lock);
+		pthread_mutex_unlock(&op -> lock);
+		pthread_mutex_destory(&op -> lock);
+		free(op);
+
+	}else{
+		op -> count --;
+		pthread_mutex_unlock(&op -> lock);
+
+	}
+
+}
