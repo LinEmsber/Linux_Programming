@@ -42,7 +42,7 @@ struct object *object_alloc(int id)
 		}
 
 		index = HASH(id);
-		
+
 		pthread_mutex_lock(&hash_lock);
 
 		op -> next = object_hash[index];
@@ -54,4 +54,32 @@ struct object *object_alloc(int id)
 		pthread_mutex_unlock(&op -> lock);
 	}
 	return fp;
+}
+
+// add count
+void object_hold(struct object *op)
+{
+	pthread_mutex_lock(&op -> lock);
+	op -> count++;
+	pthread_mutex_unlock(&op -> lock);
+}
+
+// find an existing object
+struct object *object_find(int id)
+{
+	struct object *op;
+
+	pthread_mutex_lock(&hash_lock);
+
+	for (op = object_hash[HASH(id)]; op != NULL; op = op -> next){
+
+		if(op -> id == id){
+			object_hold(op);
+			break;
+		}
+	}
+
+	pthread_mutex_unlock(&hash_lock);
+
+	return op;
 }
