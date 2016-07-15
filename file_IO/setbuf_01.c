@@ -4,10 +4,11 @@
 // setbuf, setvbuf, stream buffering operations
 //
 // void setbuf(FILE *stream, char *buf);
+// int setvbuf(FILE *stream, char *buf, int mode, size_t size);
 //
+// The setvbuf() function may be used on any open stream to change its buffer.
 //
-// The setvbuf() function may be used on any open stream to change its
-// buffer.  The mode argument must be one of the following three macros:
+// The mode argument must be one of the following three macros:
 //
 // 	_IONBF unbuffered
 //
