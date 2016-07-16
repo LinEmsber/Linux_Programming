@@ -12,7 +12,21 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 
-// Bit-mask values for 'flags' argument of becomeDaemon()
+
+// int dup2(int oldfd, int newfd);
+//
+// The dup() system call creates a copy of the file descriptor oldfd, using the lowest-numbered
+// unused file descriptor for the new descriptor.
+//
+// The dup2() system call performs the same task as dup(), but instead of using the
+// lowest-numbered unused file descriptor, it uses the file descriptor number specified in newfd.
+// If the file descriptor newfd was previously open, it is silently closed before being reused.
+//
+// On success, these system calls return the new file descriptor.
+
+
+
+// Bit-mask values for 'flags' argument of become_daemon()
 
 // Don't chdir("/")
 #define BD_NO_CHDIR 		01
@@ -30,7 +44,7 @@
 #define BD_MAX_CLOSE 		8192
 
 // Returns 0 on success, -1 on error
-int becomeDaemon(int flags)
+int become_daemon(int flags)
 {
 	int maxfd, fd;
 
@@ -84,12 +98,16 @@ int becomeDaemon(int flags)
 			close(fd);
 	}
 
+
+	// Reopen standard fd's to /dev/null
 	if (!(flags & BD_NO_REOPEN_STD_FDS)) {
-		close(STDIN_FILENO);            /* Reopen standard fd's to /dev/null */
+
+		close(STDIN_FILENO);
 
 		fd = open("/dev/null", O_RDWR);
 
-		if (fd != STDIN_FILENO)         /* 'fd' should be 0 */
+		// fd should be 0, even STDIN_FILENO, STDOUT_FILENO, or STDERR_FILENO.
+		if (fd != STDIN_FILENO)
 			return -1;
 		if (dup2(STDIN_FILENO, STDOUT_FILENO) != STDOUT_FILENO)
 			return -1;
@@ -104,9 +122,9 @@ int becomeDaemon(int flags)
 int main(int argc, char *argv[])
 {
 
-	becomeDaemon(0);
+	become_daemon(0);
 
-	/* Normally a daemon would live forever; we just sleep for a while */
+	// Normally a daemon would live forever; we just sleep for a while
 	sleep( (argc > 1) ? atoi(argv[1]) : 20 );
 
 	exit(EXIT_SUCCESS);
