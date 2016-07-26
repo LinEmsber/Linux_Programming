@@ -12,7 +12,7 @@
 struct object
 {
 	int count;
-	int tid;
+	int id;
 
 	pthread_mutex_t lock;
 	struct object *next;
