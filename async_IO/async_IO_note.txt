@@ -1,0 +1,73 @@
+Asynchronous I/O
+
+
+Introduction:
+
+In computer science, asynchronous I/O, or "Non-sequential I/O" is a form of input/output processing
+that permits other processing to continue before the transmission has finished.
+
+Input and output (I/O) operations on a computer can be extremely slow compared to the processing of
+data. An I/O device can incorporate mechanical devices that must physically move, such as a hard
+drive seeking a track to read or write; this is often orders of magnitude slower than the switching
+of electric current. For example, during a disk operation that takes ten milliseconds to perform,
+a processor that is clocked at one gigahertz could have performed ten million instruction-processing
+cycles.
+
+
+A simple approach to I/O would be to start the access and then wait for it to complete. But such an
+approach (called synchronous I/O or blocking I/O) would block the progress of a program while the
+communication is in progress, leaving system resources idle. When a program makes many I/O operations,
+this means that the processor can spend almost all of its time idle waiting for I/O operations to
+complete.
+
+
+Alternatively, it is possible to start the communication and then perform processing that does not
+require that the I/O be completed. This approach is called asynchronous input/output. Any task that
+depends on the I/O having completed (this includes both using the input values and critical operations
+that claim to assure that a write operation has been completed) still needs to wait for the I/O
+operation to complete, and thus is still blocked, but other processing that does not have a dependency
+on the I/O operation can continue.
+
+
+In general Asynchronous I/O revolves around two functions: The ability to determine that input or
+output is immediately possible without blocking or to queue I/O operations, and then determine that a
+pending I/O operation has completed. The first case is arguably preferable since it potentially avoids
+a redundant copy operation.
+
+
+
+Edge- versus level-triggered AIO mechanisms:
+
+A level-triggered AIO mechanism provides (when queried) information about which AIO events are still
+pending. In general, this translates to a set of file descriptors on which reading (or writing) can
+be performed without blocking.
+
+An edge-triggered mechanism on the other hand provides information about which events have changed
+status (from non-pending to pending) since the last query.
+
+
+open() in non-blocking mode:
+
+It is possible to open a file (or device) in "non-blocking" mode by using the O_NONBLOCK option in
+the call to open. You can also set non-blocking mode on an already open file using the fcntl call.
+Both of these options are documented in the GNU libc documentation.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+reference:
+
+1. https://en.wikipedia.org/wiki/Asynchronous_I/O
+
+2. http://davmac.org/davpage/linux/async-io.html
