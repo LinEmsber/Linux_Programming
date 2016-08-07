@@ -39,4 +39,11 @@ int main()
 
 	struct termios old_tio,new_tio;
 	struct sigaction sa_io;
+
+
+	// open the device to be non-blocking (read will return immediatly)
+	fd = open(MODEMDEVICE, O_RDWR | O_NOCTTY | O_NONBLOCK);
+	if (fd < 0) {
+		perror(MODEMDEVICE); exit(-1);
+	}
 }
