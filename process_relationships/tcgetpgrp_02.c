@@ -1,11 +1,26 @@
 /* An example of tcgetpgrp() */
 
 
-#include <sys/types.h>
-#include <termios.h>
-#include <unistd.h>
+// tcgetpgrp, tcsetpgrp - get and set terminal foreground process group
+//
+// pid_t tcgetpgrp(int fd);
+//
+// int tcsetpgrp(int fd, pid_t pgrp);
+//
+// The function tcgetpgrp() returns the process group ID of the foreground process group
+// on the terminal associated to fd, which must be the controlling terminal of the calling
+// process.
+//
+// The function tcsetpgrp() makes the process group with process group ID pgrp the foreground
+// process group on the terminal associated to fd, which must be the controlling terminal
+// of the calling process, and still be associated with its session.  Moreover, pgrp must be a
+// (nonempty) process group belonging to the same session as the calling process.
+
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
+
+#include <sys/types.h>
 
 int main()
 {
