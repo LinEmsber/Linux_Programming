@@ -1,7 +1,11 @@
-Asynchronous I/O
+===============================================================================
+			Asynchronous I/O Learning Note
+===============================================================================
 
-
+-------------------------------------------------------------------------------
 Introduction:
+-------------------------------------------------------------------------------
+
 
 In computer science, asynchronous I/O, or "Non-sequential I/O" is a form of input/output processing
 that permits other processing to continue before the transmission has finished.
@@ -35,8 +39,9 @@ pending I/O operation has completed. The first case is arguably preferable since
 a redundant copy operation.
 
 
-
-Edge- versus level-triggered AIO mechanisms:
+-------------------------------------------------------------------------------
+Edge-triggered versus level-triggered AIO mechanisms:
+-------------------------------------------------------------------------------
 
 A level-triggered AIO mechanism provides (when queried) information about which AIO events are still
 pending. In general, this translates to a set of file descriptors on which reading (or writing) can
@@ -46,17 +51,52 @@ An edge-triggered mechanism on the other hand provides information about which e
 status (from non-pending to pending) since the last query.
 
 
+-------------------------------------------------------------------------------
 open() in non-blocking mode:
-
+-------------------------------------------------------------------------------
 It is possible to open a file (or device) in "non-blocking" mode by using the O_NONBLOCK option in
 the call to open. You can also set non-blocking mode on an already open file using the fcntl call.
 Both of these options are documented in the GNU libc documentation.
 
+Non-blocking mode makes it possible to continuously iterate through the interesting file descriptors
+and check for available input (or check for readiness for output) simply by attempting a read (or
+write). This technique is called polling and is problematic primarily because it needlessly consumes
+CPU time - that is, the program never blocks, even when no input or output is possible on any file
+descriptor. An event notification mechanism is needed to discover when useful reads/writes are
+possible.
+
+-------------------------------------------------------------------------------
+AIO on Linux:
+-------------------------------------------------------------------------------
+There are several ways to deal with asynchronous events on linux; all of them presently have at least
+some minor problems, mainly due to limitations in the kernel.
+
+Threading
+Signals
+The SIGIO signal
+select() and poll() (and pselect/ppoll)
+epoll()
+POSIX asynchronous I/O (AIO)
 
 
+-------------------------------------------------------------------------------
+Threading:
+-------------------------------------------------------------------------------
+The use of multiple threads is in some ways an ideal solution to the problem of asynchronous I/O, as
+well as asynchronous event handling in general, since it allows events to be dealt with asynchronously
+and any needed synchronization can be done explicitly (using mutexes and similar mechanisms).
 
+However, for large amounts of concurrent I/O, the use of threads has significant problems for practical
+application due to the fact that each thread requires a stack (and therefore consumes a certain amount
+of memory) and the number of threads of in a process may be limited by this and other factors.
+
+Threading is presently the only way to deal certain kinds of asynchronous operation (obtaining file
+locks, for example).
+
+
+-------------------------------------------------------------------------------
 Asynchronous Notification:
-
+-------------------------------------------------------------------------------
 Although the combination of blocking and nonblocking operations and the select method are sufficient
 for querying the device most of the time, some situations aren't efficiently managed by the
 techniques we've seen so far.
