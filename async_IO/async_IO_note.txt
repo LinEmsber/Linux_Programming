@@ -94,6 +94,30 @@ Threading is presently the only way to deal certain kinds of asynchronous operat
 locks, for example).
 
 
+
+-------------------------------------------------------------------------------
+Signals:
+-------------------------------------------------------------------------------
+
+Signals can be sent between unix processes by using kill() as documented in the libc manual, or between
+threads using pthread_kill(). There are also the so-called "real-time" signal interfaces. Most
+importantly, signals can be sent automatically when certain asynchronous events occur.
+
+Signal handlers as an asynchronous event notification mechanism work just fine, but because they are
+truly executed asynchronously there is a limit to what they can usefully do. There are a limited number
+of C library functions which can be called safely from within a signal handler).
+
+
+
+
+
+
+
+
+
+
+
+
 -------------------------------------------------------------------------------
 Asynchronous Notification:
 -------------------------------------------------------------------------------
