@@ -14,6 +14,7 @@ int main()
 	ret = lseek(fd, (off_t) 1825, SEEK_SET);
 	if (ret == (off_t) -1){
 		perror("lseek");
+		return -1;
 	}
 
 	// SEEK_END
@@ -21,6 +22,7 @@ int main()
 	ret = lseek(fd, 0, SEEK_END);
 	if (ret == (off_t) -1){
 		perror("lseek");
+		return -1;
 	}
 
 	// SEEK_CUR
@@ -28,6 +30,7 @@ int main()
 	ret = lseek(fd, 0, SEEK_CUR);
 	if (ret == (off_t) -1){
 		perror("lseek");
+		return -1;
 	}
 
 }
