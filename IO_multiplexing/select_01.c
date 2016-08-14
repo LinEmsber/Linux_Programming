@@ -33,6 +33,7 @@ int main()
 		return 0;
 	}
 
+	// check the read event of this file descriptor is happen or not.
 	if ( FD_ISSET(STDIN_FILENO, &read_fds) ){
 
 		int len;
