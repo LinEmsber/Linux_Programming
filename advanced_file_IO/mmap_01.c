@@ -7,14 +7,6 @@
 // The second argument: The offset of open.
 // The third argument(optional): The length of open. If it is without this argument display to end of file.
 
-#include <fcntl.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-
-#include <sys/mman.h>
-#include <sys/stat.h>
-
 // void *mmap(void *addr, size_t length, int prot, int flags, int fd, off_t offset);
 //
 // mmap() creates a new mapping in the virtual address space of the calling process. The
@@ -49,6 +41,15 @@
 // These functions return information about a file, in the buffer pointed to by buf.
 //
 // On success, zero is returned.  On error, -1 is returned,
+
+#include <fcntl.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+
+#include <sys/mman.h>
+#include <sys/stat.h>
+
 
 // error massage handler
 #define handle_error(msg)               \
