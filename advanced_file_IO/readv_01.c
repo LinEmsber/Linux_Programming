@@ -20,7 +20,7 @@ int main()
         char str_0[50], str_1[50], str_2[50], str_3[50], str_4[50];
 
         // open
-        fd = open("writev_readv_data.txt", O_RDONLY );
+        fd = open("test.txt", O_RDONLY );
         if (fd == -1){
                 perror("open");
                 return 1;

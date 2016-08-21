@@ -26,7 +26,7 @@ int main()
         struct iovec iov[5];
 
         // open
-        fd = open("writev_readv_data.txt", O_WRONLY | O_CREAT | O_TRUNC);
+        fd = open("test.txt", O_WRONLY | O_CREAT | O_TRUNC);
         if (fd == -1){
                 perror("open");
                 return 1;
