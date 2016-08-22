@@ -42,9 +42,10 @@
 //
 // On success, zero is returned.  On error, -1 is returned,
 
-#include <fcntl.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdint.h>
+#include <fcntl.h>
 #include <unistd.h>
 
 #include <sys/mman.h>
@@ -92,10 +93,10 @@ int main(int argc, char *argv[])
         page_aligned_offset = offset & ~(sysconf(_SC_PAGE_SIZE) - 1);
 
         // print out info
-        printf("\ntotal size in byte: %d\n", sb.st_size);
-        printf("offset: %d\n", offset);
-        printf("_SC_PAGE_SIZE: %d\n", sysconf(_SC_PAGE_SIZE));
-        printf("page_aligned_offset: %d\n", page_aligned_offset);
+        printf("\ntotal size in byte: %zu\n", sb.st_size);
+        printf("offset: %zu\n", offset);
+        printf("_SC_PAGE_SIZE: %zu\n", sysconf(_SC_PAGE_SIZE));
+        printf("page_aligned_offset: %zu\n", page_aligned_offset);
 
         // prevent offset exceed the end of file.
         if (offset >= sb.st_size) {
@@ -103,6 +104,7 @@ int main(int argc, char *argv[])
                 exit(EXIT_FAILURE);
         }
 
+	printf("\n");
         // Do we set the length argument for displaying?
         if (argc == 4) {
 
