@@ -1,4 +1,4 @@
-/* An example of epoll() */
+// /* An example of epoll() */
 
 
 // int epoll_create1(int flags);
@@ -45,7 +45,7 @@
 #define MAXLINE		10
 #define OPEN_MAX	100
 #define LISTENQ		20
-#define SERV_PORT	5555
+#define SERV_PORT	5000
 #define INFTIM		1000
 
 // error massage handler
@@ -83,8 +83,10 @@ int main(int argc, char *argv[])
         int epfd;                               // fd for epoll
         int nfds;                               // number of fd for polling
         ssize_t nr;                             // n byte read
+	ssize_t nw;				// n byte write
         char line[MAXLINE];                     // char line for reading
-        socklen_t cli_len;
+        // socklen_t cli_len;
+	socklen_t ser_len;
 
 	struct epoll_event ev, events[20];
 
@@ -102,6 +104,11 @@ int main(int argc, char *argv[])
         if (listenfd == -1){
                 handle_error("socket");
         }
+
+	ret = setsockopt(listenfd, SOL_SOCKET, SO_REUSEADDR, &(int){ 1 }, sizeof(int) );
+	if( ret < 0){
+		handle_error("setsockopt(SO_REUSEADDR)");
+	}
 
         // set fd as nonblocking
 	set_nonblocking(listenfd);
@@ -149,7 +156,7 @@ int main(int argc, char *argv[])
 			if(events[i].data.fd == listenfd) {
 
 				printf("accept connection, fd is %d\n", listenfd);
-				connfd = accept(listenfd, (struct sockaddr *)&client_addr, &cli_len);
+				connfd = accept(listenfd, (struct sockaddr *)&server_addr, &ser_len);
 				if(connfd < 0) {
 					handle_error("connfd < 0");
 					exit(1);
@@ -162,15 +169,20 @@ int main(int argc, char *argv[])
 
 				ev.data.fd = connfd;
 				ev.events = EPOLLIN | EPOLLET;
-				epoll_ctl(epfd, EPOLL_CTL_ADD, connfd, &ev);
+
+				epoll_ctl(epfd, EPOLL_CTL_MOD, sockfd, &ev);
+
 
                         // poll in
 			} else if(events[i].events & EPOLLIN) {
 
-				if((sockfd = events[i].data.fd) < 0)
-                                        continue;
+				sockfd = events[i].data.fd;
+				if( sockfd < 0){
+					continue;
+				}
 
-				if((nr = read(sockfd, line, MAXLINE)) < 0) {
+				nr = read(sockfd, line, MAXLINE);
+				if( nr < 0 ) {
 
 					if(errno == ECONNRESET) {
 						close(sockfd);
@@ -188,25 +200,37 @@ int main(int argc, char *argv[])
 
 				ev.data.fd = sockfd;
 				ev.events = EPOLLOUT | EPOLLET;
+
 				epoll_ctl(epfd, EPOLL_CTL_MOD, sockfd, &ev);
+
 
                         // poll out
 			} else if(events[i].events & EPOLLOUT) {
 
 				sockfd = events[i].data.fd;
-				write(sockfd, line, nr);
+				if( sockfd < 0){
+					continue;
+				}
+
+				nw = write(sockfd, line, nr);
+				if (nw < 0 ){
+					handle_error("write");
+				}
+
 
 				printf("written data: %s\n", line);
 
 				ev.data.fd = sockfd;
 				ev.events = EPOLLIN | EPOLLET;
+
 				epoll_ctl(epfd, EPOLL_CTL_MOD, sockfd, &ev);
+
 			}
 
                 // for(i = 0; i < nfds; ++i) loop
 		}
 
-                printf("timeout\n");
+                // printf("timeout\n");
         // for(;;) loop
 	}
 

@@ -29,6 +29,7 @@ int main(int argc, char *argv[])
 
 	int sockfd = 0;
 	int listen_fd = 0, ret_read = 0, ret_inet_pton = 0, ret_connect = 0;
+	int nw = 0;
 	struct sockaddr_in serv_addr;
 
 	char recv_buf[1024];
@@ -79,6 +80,8 @@ int main(int argc, char *argv[])
 			printf("\n Read error \n");
 
 		}
+
+
 	// while loop
 	}
 	return 0;
