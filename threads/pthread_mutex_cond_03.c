@@ -1,5 +1,10 @@
 /* An example of pthread condition variable */
 
+// The producer() produce a char item which starts from a, and save this char into buffer.
+// The put_item() save this char into buffer, and make the global index variable, in, point
+// to next index.
+//
+// The consumer() get the char according to the global index variable, in.
 
 #include <stdio.h>
 #include <unistd.h>
@@ -41,7 +46,7 @@ void put_item(int item)
 }
 
 pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
- pthread_cond_t wait_empty_buffer;
+pthread_cond_t wait_empty_buffer;
 pthread_cond_t wait_full_buffer;
 
 #define ITEM_COUNT (CAPACITY * 2)
