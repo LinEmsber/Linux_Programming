@@ -11,7 +11,9 @@
 //
 // terminal 2:
 // > sudo screen /dev/ttyS* 115200
-// > (enter any key)
+//
+// enter any input at terminal 2, and input the string at terminal 1.
+
 
 
 
@@ -30,6 +32,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <unistd.h>
 #include <fcntl.h>
 
@@ -62,7 +65,7 @@ void signal_handler_IO (int status)
 int main()
 {
 	int fd;
-	int rn;
+	int nr;
 	char buf[255];
 
 	struct termios old_tio,new_tio;
@@ -113,13 +116,18 @@ int main()
 		// After receiving SIGIO, wait_flag = FALSE, input is available and can be read
 		if (wait_flag == FALSE) {
 
-			rn = read(fd, buf, 255);
-			buf[rn] = '\0';
-			printf("buf: %s, rn: %d\n", buf, rn);
+			// nr = read(fd, buf, 255);
+			// buf[nr] = '\0';
 
-			if (rn == 1){
+			scanf("%s", buf);
+			printf("buf: %s, nr: %zu\n", buf, strlen(buf) );
+
+			if (nr == 1){
 				STOP = TRUE;
 			}
+
+			// buffer memory reset
+			memset(buf, 0, 255);
 
 			// wait for new input
 			wait_flag = TRUE;
@@ -129,6 +137,8 @@ int main()
 
 	// restore old port settings
 	tcsetattr(fd,TCSANOW, &old_tio);
+
+	close(fd);
 
 	return 0;
 }
