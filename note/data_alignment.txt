@@ -20,6 +20,24 @@ previous data structure end is at address 13, the next data structure should sta
 Two padding bytes are inserted between the two data structures at addresses 14 and 15 to align
 the next data structure at address 16.
 
+In Linux kernel version 2.4:
+
+Linux netlink socket uses NLMSG_ALIGN macro to round up the length of a netlink message to proper
+alignment. Reading the source code reveals that this macro align the length to next 4 bytes by using
+the following tricks.
+
+
+#define NLMSG_ALIGN(len) ( ((len)+NLMSG_ALIGNTO-1) & ~(NLMSG_ALIGNTO-1) )
+
+if len = 18
+
+        (len + (18 - 1)) & ~(18 - 1) = 16
+
+if len = 23
+
+        (len + (23 - 1)) & ~(23 - 1) = 20
 
 references:
 https://en.wikipedia.org/wiki/Data_structure_alignment
+http://wcang.blogspot.tw/2013/02/cool-bitwise-operation-tricks.html
+http://lxr.free-electrons.com/source/include/linux/netlink.h?v=2.4.37#L64
