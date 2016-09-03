@@ -26,16 +26,17 @@ Linux netlink socket uses NLMSG_ALIGN macro to round up the length of a netlink 
 alignment. Reading the source code reveals that this macro align the length to next 4 bytes by using
 the following tricks.
 
-
+// align, len, to NLMSG_ALIGNTO
+#define NLMSG_ALIGNTO 8
 #define NLMSG_ALIGN(len) ( ((len)+NLMSG_ALIGNTO-1) & ~(NLMSG_ALIGNTO-1) )
 
 if len = 18
 
-        (len + (18 - 1)) & ~(18 - 1) = 16
+        (18 + (8 - 1)) & ~(8 - 1) = 16
 
 if len = 23
 
-        (len + (23 - 1)) & ~(23 - 1) = 20
+        (23 + (8 - 1)) & ~(8 - 1) = 20
 
 references:
 https://en.wikipedia.org/wiki/Data_structure_alignment
