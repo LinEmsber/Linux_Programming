@@ -112,9 +112,9 @@ of a given field. For example:
                 int three;
         } n;
 
-        int *ptr = &n.two;
+        int *n_two_ptr = &n.two;
         struct numbers *n_ptr;
-        n_ptr = container_of(ptr, struct numbers, two);
+        n_ptr = container_of(n_two_ptr, struct numbers, two);
 
 
 You have a pointer that points in the middle of a structure (and you know that is a pointer to the
