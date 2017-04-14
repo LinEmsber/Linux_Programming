@@ -17,27 +17,33 @@ struct entry
 void print_entry ( const char *s, const struct entry *fe)
 {
 	printf("%s", s);
-	printf("structure at 0x%lx\n", (unsigned long) fe);
-	printf("entry.a = %d\n", fe -> a);
-	printf("entry.b = %d\n", fe -> b);
-	printf("entry.c = %d\n", fe -> c);
-	printf("entry.d = %d\n", fe -> d);
+	printf("\tstructure at 0x%lx\n", (unsigned long) fe);
+	printf("\tentry.a = %d\n", fe -> a);
+	printf("\tentry.b = %d\n", fe -> b);
+	printf("\tentry.c = %d\n", fe -> c);
+	printf("\tentry.d = %d\n", fe -> d);
 }
 
-void thread_fun_1(void *arg)
+struct entry test_entry;
+
+void *thread_fun_1(void *arg)
 {
 	struct entry e = {1, 2, 3, 4};
 
-	print_entry("thread 1: \n", &e);
-	pthread_exit( (void *) &e  );
+	test_entry = e;
+
+	print_entry("thread 1: \n", &test_entry);
+	pthread_exit( (void *) &test_entry  );
 }
 
-void thread_fun_2(void *arg)
+void *thread_fun_2(void *arg)
 {
-	struct entry e = {1, 2, 3, 4};
+	struct entry e = {100, 200, 300, 400};
+	test_entry = e;
 
-	print_entry("thread 2: ID is %lu", (unsigned long)pthread_self() );
-	pthread_exit( (void *) 0 );
+	print_entry("thread 2: \n", &test_entry);
+	printf("thread 2: ID is %lu\n", pthread_self() );
+	pthread_exit( (void *) &test_entry );
 }
 
 int main()
@@ -58,7 +64,8 @@ int main()
 	}
 
 	sleep(1);
-	printf("parent starting second thread\n");
+	printf("\n");
+	// printf("parent starting second thread\n");
 
 
 	// thread 2
@@ -72,8 +79,6 @@ int main()
 		perror("pthread_join");
 	}
 	sleep(1);
-
-	print_entry("parent: \n", fe);
 
 	return 0;
 }

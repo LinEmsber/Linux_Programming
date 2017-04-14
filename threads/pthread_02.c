@@ -4,8 +4,13 @@
 #include <errno.h>
 #include <pthread.h>
 
+/* A global variable for saving retrun value from thread.
+ * We can use a pointer to integer point to this return value in the main process.
+ */
+int thread_return_value;
+
 // compute successive prime numbers
-void *compute_prime (void* arg)
+void * compute_prime (void* arg)
 {
 
 	int candidate = 2;
@@ -25,37 +30,36 @@ void *compute_prime (void* arg)
 		}
 		// is the prime number or not
 		if (is_prime) {
-			if (--n == 0)
-				// printf("%d\n", n);
-				return (void *)candidate;
+			if (--n == 0){
+				thread_return_value = candidate;
+				pthread_exit(&thread_return_value);
+			}
 		}
 		++candidate;
 	}
-	return NULL;
+	pthread_exit(0);
 }
 
 int main ()
 {
 
-	int prime;
-	int which_prime = 1000;
+	int * prime;
+	int which_prime = 10;
 	int which_prime_origianl = which_prime;
-	int ret_pthread_create, ret_pthread_join;
+	int ret;
 	pthread_t thread;
 
-	// make a new thread
-	ret_pthread_create = pthread_create (&thread, NULL, &compute_prime, &which_prime);
-	if (ret_pthread_create != 0)
+	// create a new thread
+	ret = pthread_create (&thread, NULL, &compute_prime, &which_prime);
+	if (ret != 0)
 		perror("pthread_create");
 
-	// wait for the prime number thread to complete
-	ret_pthread_join = pthread_join (thread, (void**) &prime);
-	if (ret_pthread_join != 0)
+	// wait for the prime number thread to complete, and obtain the return value from thread.
+	ret = pthread_join (thread, (void **) &prime);
+	if (ret != 0)
 		perror("pthread_join");
 
-
-	// print the largest prime
-	printf("The %d-th prime number is %d.\n", which_prime_origianl, prime);
+	printf("The %d-th prime number is %d.\n", which_prime_origianl, *prime);
 
 	return 0;
 }
