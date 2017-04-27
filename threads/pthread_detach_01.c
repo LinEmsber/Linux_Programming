@@ -20,13 +20,13 @@
 #include <unistd.h>
 #include <pthread.h>
 
-#define RUN_TIMES 2000
+#define THREAD_NUM 2000
 #define ADD_COUNT 100
 
 int global = 0;
 
 pthread_mutex_t mutex;
-pthread_t tids[RUN_TIMES];
+pthread_t tids[THREAD_NUM];
 
 void *compute(void *arg)
 {
@@ -50,23 +50,27 @@ void multi_thread_test()
         int i;
 
         global = 0;
-        pthread_mutex_init(&mutex, NULL);
 
-        for (i = 0; i < RUN_TIMES; i++)
+#ifdef _L
+        pthread_mutex_init(&mutex, NULL);
+#endif
+
+        for (i = 0; i < THREAD_NUM; i++)
                 pthread_create(&tids[i], NULL, compute, NULL);
 
 #ifdef _J
-        for (i = 0; i < RUN_TIMES; i++){
+        for (i = 0; i < THREAD_NUM; i++){
                 pthread_join(tids[i], NULL);
 	}
 #elif _D
-        for (i = 0; i < RUN_TIMES; i++){
+        for (i = 0; i < THREAD_NUM; i++){
                 pthread_detach(tids[i]);
 	}
 #endif
 
 
 #ifdef _S
+        /* set the sleep time for waiting threads to finish. */
 	sleep(2);
 #endif
 
@@ -101,7 +105,7 @@ int main()
         clock_gettime(CLOCK_REALTIME, &end);
 
 	printf("calculated global: %d\n", global);
-	printf("expected global: %d\n", ADD_COUNT * ADD_COUNT * RUN_TIMES);
+	printf("expected global: %d\n", ADD_COUNT * ADD_COUNT * THREAD_NUM);
 
         time_diff = time_diff_in_second(start, end);
         printf("time difference in sencond: %lf\n", time_diff);
