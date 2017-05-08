@@ -4,7 +4,7 @@
 #include <unistd.h>
 #include <pthread.h>
 
-int t1, t2, t3, t4;
+int num_1, num_2, num_3, num_4;
 
 pthread_barrier_t barrier;
 
@@ -13,10 +13,10 @@ void * thread_1()
 	sleep(2);
 
 	printf("Enter value for thread 1:  ");
-	scanf("%d", &t1);
+	scanf("%d", &num_1);
 	pthread_barrier_wait(&barrier);
 
-	printf("\nvalues entered by the threads are  %d %d %d %d \n", t1, t2, t3, t4);
+	printf("\nvalues entered by the threads are  %d %d %d %d \n", num_1, num_2, num_3, num_4);
 
 	return NULL;
 }
@@ -27,10 +27,10 @@ void * thread_2()
 	sleep(4);
 
 	printf("Enter value for thread 2:  ");
-	scanf("%d", &t2);
+	scanf("%d", &num_2);
 	pthread_barrier_wait(&barrier);
 
-	printf("\nvalues entered by the threads are  %d %d %d %d \n", t1, t2, t3, t4);
+	printf("\nvalues entered by the threads are  %d %d %d %d \n", num_1, num_2, num_3, num_4);
 
 	return NULL;
 }
@@ -40,10 +40,10 @@ void * thread_3()
 	sleep(6);
 
 	printf("Enter value for thread 3:  ");
-	scanf("%d", &t3);
+	scanf("%d", &num_3);
 	pthread_barrier_wait(&barrier);
 
-	printf("\nvalues entered by the threads are  %d %d %d %d \n", t1, t2, t3, t4);
+	printf("\nvalues entered by the threads are  %d %d %d %d \n", num_1, num_2, num_3, num_4);
 
 	return NULL;
 }
@@ -53,10 +53,10 @@ void * thread_4()
 	sleep(8);
 
 	printf("Enter value for thread 4:  ");
-	scanf("%d", &t4);
+	scanf("%d", &num_4);
 	pthread_barrier_wait(&barrier);
 
-	printf("\nvalues entered by the threads are  %d %d %d %d \n", t1, t2, t3, t4);
+	printf("\nvalues entered by the threads are  %d %d %d %d \n", num_1, num_2, num_3, num_4);
 
 	return NULL;
 }

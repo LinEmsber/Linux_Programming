@@ -9,7 +9,7 @@
 
 pthread_barrier_t barrier;
 
-void * initor(void * arg)
+void * thread(void * arg)
 {
 	int i = *( (int *) arg);
 
@@ -28,7 +28,7 @@ void * initor(void * arg)
 int main(int argc, char **argv)
 {
 	int i;
-	int pass_arg;
+	int arg;
 
 	pthread_t pid[THREAD_NUMBER];
 
@@ -36,8 +36,8 @@ int main(int argc, char **argv)
 	printf("Time: %lu, [main]: pthread_barrier_init done.\n", time(NULL));
 
 	for (i = 0; i < THREAD_NUMBER; i++){
-		pass_arg = i;
-		pthread_create( &pid[i], NULL, &initor, (void *) &pass_arg );
+		arg = i;
+		pthread_create( &pid[i], NULL, &thread, (void *) &arg );
 	}
 
 	sleep(3);
