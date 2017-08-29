@@ -6,7 +6,7 @@ int main()
 {
 	int i;
 	int r = 0, c = 0, a = 0;
-	int iter = 5000000;
+	int iter = 500000;
 
 	printf("OpenMP threads = %d\n", omp_get_max_threads() );
 
