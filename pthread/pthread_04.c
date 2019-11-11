@@ -1,4 +1,7 @@
 /* Using pointers to obtain the global variables which are returned from the threads */
+/* pthread_equal - compare thread IDs
+   int pthread_equal(pthread_t t1, pthread_t t2);
+ */
 
 #include <stdio.h>
 #include <stdlib.h>

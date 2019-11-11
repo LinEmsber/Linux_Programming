@@ -1,11 +1,15 @@
 /* An example of pthread */
+/* 
+   pthread_create - create a new thread
+   int pthread_create(pthread_t *thread, const pthread_attr_t *attr, void *(*start_routine) (void *), void *arg);
 
+   pthread_join - join with a terminated thread
+   int pthread_join(pthread_t thread, void **retval);
+ */
 
 #include <stdio.h>
 #include <errno.h>
 #include <pthread.h>
-
-
 
 // this function is run by the second thread
 void * increase_num(void *num_ptr)
@@ -35,12 +39,10 @@ int main()
 		perror("pthread_create");
 	}
 
-
 	while(y < 100){
 		y++;
 	}
 	printf("y increament finished\n");
-
 
 	ret = pthread_join(tid, NULL);
 	if( ret != 0){

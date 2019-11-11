@@ -6,22 +6,20 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <errno.h>
-
 #include <pthread.h>
 
-struct entry
-{
+struct entry {
 	int a, b, c, d;
 };
 
-void print_entry ( const char *s, const struct entry *fe)
+void print_entry ( const char *s, const struct entry *e)
 {
 	printf("%s", s);
-	printf("\tstructure at 0x%lx\n", (unsigned long) fe);
-	printf("\tentry.a = %d\n", fe -> a);
-	printf("\tentry.b = %d\n", fe -> b);
-	printf("\tentry.c = %d\n", fe -> c);
-	printf("\tentry.d = %d\n", fe -> d);
+	printf("\tstructure at 0x%lx\n", (unsigned long) e);
+	printf("\tentry.a = %d\n", e -> a);
+	printf("\tentry.b = %d\n", e -> b);
+	printf("\tentry.c = %d\n", e -> c);
+	printf("\tentry.d = %d\n", e -> d);
 }
 
 struct entry test_entry;
@@ -50,7 +48,7 @@ int main()
 {
 	int err;
 	pthread_t tid_1, tid_2;
-	struct entry *fe;
+	struct entry *e;
 
 	// thread 1
 	err = pthread_create(&tid_1, NULL, thread_fun_1, NULL);
@@ -58,15 +56,10 @@ int main()
 		perror("pthread_create");
 	}
 
-	err = pthread_join(tid_1, (void *) &fe);
+	err = pthread_join(tid_1, (void *) &e);
 	if (err != 0){
 		perror("pthread_join");
 	}
-
-	sleep(1);
-	printf("\n");
-	// printf("parent starting second thread\n");
-
 
 	// thread 2
 	err = pthread_create(&tid_2, NULL, thread_fun_2, NULL);
@@ -74,11 +67,10 @@ int main()
 		perror("pthread_create");
 	}
 
-	err = pthread_join(tid_2, (void *) &fe);
+	err = pthread_join(tid_2, (void *) &e);
 	if (err != 0){
 		perror("pthread_join");
 	}
-	sleep(1);
 
 	return 0;
 }

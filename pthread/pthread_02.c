@@ -1,4 +1,8 @@
 /* An example of pthread API */
+/*
+   pthread_exit - terminate calling thread
+   void pthread_exit(void *retval);
+ */
 
 #include <stdio.h>
 #include <errno.h>
@@ -12,7 +16,6 @@ int thread_return_value;
 // compute successive prime numbers
 void * compute_prime (void* arg)
 {
-
 	int candidate = 2;
 	int n = *((int*) arg);
 
@@ -21,30 +24,32 @@ void * compute_prime (void* arg)
 		int is_prime = 1;
 
 		// test primality by successive division.
-		for (factor = 2; factor < candidate; ++factor){
-
+		for (factor = 2; factor < candidate; factor++){
 			if (candidate % factor == 0) {
 				is_prime = 0;
 				break;
 			}
 		}
+
 		// is the prime number or not
 		if (is_prime) {
-			if (--n == 0){
+			n = n - 1;
+			if (n == 0){
 				thread_return_value = candidate;
 				pthread_exit(&thread_return_value);
 			}
 		}
-		++candidate;
+
+		// increase candidate value
+		candidate++;
 	}
-	pthread_exit(0);
 }
 
 int main ()
 {
 
 	int * prime;
-	int which_prime = 10;
+	int which_prime = 20;
 	int which_prime_origianl = which_prime;
 	int ret;
 	pthread_t thread;
